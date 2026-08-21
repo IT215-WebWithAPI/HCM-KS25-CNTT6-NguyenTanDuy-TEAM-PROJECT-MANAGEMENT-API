@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Literal
 
 class ProjectMemberBase(BaseModel):
     class Config:
@@ -9,13 +9,13 @@ class ProjectMemberBase(BaseModel):
 class ProjectMemberCreate(ProjectMemberBase):
     project_id: int = Field(...)
     user_id: int = Field(...)
-    role: str = Field(...)
+    role: Literal["owner", "member"] = Field(...)
     joined_at: Optional[datetime] = Field(...)
 
 class ProjectMemberUpdate(ProjectMemberBase):
     project_id: int = Field(...)
     user_id: int = Field(...)
-    role: str = Field(...)
+    role: Literal["owner", "member"] = Field(...)
 
 class ProjectMemberResponse(ProjectMemberBase):
     id: int

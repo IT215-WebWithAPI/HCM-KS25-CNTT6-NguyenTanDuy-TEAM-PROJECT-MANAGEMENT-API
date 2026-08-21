@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Literal
 
 class UserBase(BaseModel):
     email: str = Field(...)
@@ -9,11 +9,10 @@ class UserBase(BaseModel):
         from_attributes = True
 
 class UserCreate(UserBase):
-    original_password: str = Field(...)
+    password: str = Field(...)
     full_name: str = Field(...)
     role: str = "user"
     is_active: bool = True
-    created_at: Optional[datetime] = Field(...)
 
 class UserUpdate(UserBase):
     full_name: str = Field(...)

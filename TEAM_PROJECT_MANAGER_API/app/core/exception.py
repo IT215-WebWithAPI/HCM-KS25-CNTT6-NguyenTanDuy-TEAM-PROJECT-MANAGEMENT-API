@@ -6,7 +6,7 @@ def register_exception_handler(app: FastAPI):
 
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(req: Request, exc: RequestValidationError):
-        return create_response(req=req, status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, message="Lỗi dữ liệu đầu vào không hợp lệ!", data=None, error=str(exc))
+        return create_response(req=req, status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, message="Lỗi dữ liệu đầu vào không hợp lệ!", data=None, error=exc.errors())
 
     @app.exception_handler(HTTPException)
     async def exception_client(req: Request, exc: HTTPException):
