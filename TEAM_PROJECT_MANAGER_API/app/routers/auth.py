@@ -61,12 +61,5 @@ def login_user(
         }
     }
 
-@auth_router.get("/admin", response_model=ResponseCreate, status_code=status.HTTP_200_OK)
-def test_role_admin(req: Request, current_user: UserModel = Depends(RoleChecker(["admin"]))):
-    data = UserResponse.model_validate(current_user)
-    return create_response(req, status.HTTP_200_OK, "Xác thực thành công!", data, None)
 
-@auth_router.get("/get-current", response_model=ResponseCreate, status_code=status.HTTP_200_OK)
-def test_role_user(req: Request, current_user: UserModel = Depends(get_current_user)):
-    data = UserResponse.model_validate(current_user)
-    return create_response(req, status.HTTP_200_OK, "Xác thực thành công!", data, None)
+

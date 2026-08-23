@@ -4,6 +4,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 from app.core.exception import register_exception_handler
 from app.routers.auth import auth_router
+from app.routers.user import user_router
 
 import app.models.project_model
 import app.models.user_model
@@ -19,6 +20,7 @@ Base.metadata.create_all(bind=engine)
 register_exception_handler(app=app)
 
 app.include_router(auth_router)
+app.include_router(user_router)
 
 @app.get("/health")
 def health_check(db: Session = Depends(get_db)):
