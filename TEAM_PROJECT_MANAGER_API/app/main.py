@@ -10,6 +10,8 @@ import app.models.user_model
 import app.models.project_members_model
 import app.models.task_model
 
+import app.dependencies.dependencies
+
 app = FastAPI()
 
 Base.metadata.create_all(bind=engine)

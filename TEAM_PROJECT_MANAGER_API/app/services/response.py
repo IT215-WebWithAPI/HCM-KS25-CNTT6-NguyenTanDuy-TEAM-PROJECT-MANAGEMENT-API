@@ -20,5 +20,5 @@ def create_response(
             error=error,
             timestamp=str(datetime.now(timezone.utc).isoformat()),
             path=req.url.path
-        ).model_dump()
+        ).model_dump(mode="json")
     )

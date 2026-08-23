@@ -14,6 +14,9 @@ class UserCreate(UserBase):
     role: str = "user"
     is_active: bool = True
 
+class UserLogin(UserBase):
+    password: str = Field(...)
+
 class UserUpdate(UserBase):
     full_name: str = Field(...)
     role: str = "user"
@@ -23,4 +26,5 @@ class UserResponse(UserBase):
     id: int
     full_name: str
     role: str
+    created_at: datetime
     is_active: bool
