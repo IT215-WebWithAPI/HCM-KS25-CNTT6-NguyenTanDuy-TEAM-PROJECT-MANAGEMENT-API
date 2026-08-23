@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from app.models.user_model import UserModel
 from typing import Optional
+from app.dependencies.dependencies import get_current_user
+from app.core.security import create_access_token
 
 def search_user_admin(db: Session, key_name: Optional[str] = None, key_email: Optional[str] = None, key_is_active: Optional[bool] = None):
     db_filtered = db.query(UserModel)
@@ -15,3 +17,16 @@ def search_user_admin(db: Session, key_name: Optional[str] = None, key_email: Op
         db_filtered = db_filtered.filter(UserModel.is_active == key_is_active)
 
     return db_filtered.all()
+
+
+def refresh_token(token: str, db: Session)->str:
+    user_db = get_current_user(token, db)
+
+    data_payload = {
+        "sub": user_db.email,
+        "id": user_db.id,
+        "role": user_db.role
+    }
+
+    if user_db is not None:
+        return create_access_token(data=data_payload)

@@ -33,6 +33,7 @@ def create_user(req: Request,
 
 @auth_router.post("/login", tags=["Authentication"], status_code=status.HTTP_200_OK)
 def login_user(
+    req: Request,
     email: str = Form(..., description="Tài khoản"),
     password: str = Form(..., description="Mật khẩu"),
     db: Session = Depends(get_db)
@@ -48,18 +49,22 @@ def login_user(
         "role": role_name
     })
 
-    return {
-        "message": "Đăng nhập thành công",
+    refresh_token = create_access_token(data={
+        "sub": user_input_login.email,
+        "role": role_name
+    })
+
+    data = {
         "access_token": access_token,
-        "token_type": "bearer",
-        "data": {
-            "id": user_input_login.id,
-            "email": user_input_login.email,
-            "role": role_name,
-            "is_active": user_input_login.is_active,
-            "created_at": user_input_login.created_at
-        }
+        "refresh_token": refresh_token,
+        "id": user_input_login.id,
+        "email": user_input_login.email,
+        "role": role_name,
+        "is_active": user_input_login.is_active,
+        "created_at": user_input_login.created_at
     }
+
+    return create_response(req, status.HTTP_200_OK, "Đăng nhập thành công!", data, None)
 
 
 
