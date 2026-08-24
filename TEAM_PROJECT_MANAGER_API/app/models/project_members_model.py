@@ -8,7 +8,7 @@ class ProjectMemberModel(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     role = Column(String(50))
-    joined_at = Column(DateTime, nullable=False)
+    joined_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)

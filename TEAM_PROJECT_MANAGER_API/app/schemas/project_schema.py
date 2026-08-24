@@ -19,6 +19,6 @@ class ProjectUpdate(ProjectBase):
 class ProjectResponse(ProjectBase):
     id: int
     name: str
-    description: str
+    description: Optional[str]
     owner_id: int
-    created_at: datetime
+    created_at: Optional[datetime]

@@ -3,7 +3,6 @@ from sqlalchemy import Column, String, Integer, DateTime, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 
-from app.models.user_model import UserModel
 
 class ProjectModel(Base):
     __tablename__ = "projects"

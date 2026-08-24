@@ -1,7 +1,11 @@
 from sqlalchemy.orm import Session
 from app.schemas.project_schema import ProjectCreate
 from app.models.project_model import ProjectModel
+from app.models.user_model import UserModel
+from app.models.project_members_model import ProjectMemberModel
 from app.schemas.user_schema import UserResponse
+from typing import Optional
+from fastapi import HTTPException, status
 
 def create_project(db: Session, project_input: ProjectCreate, user_login: UserResponse):
 
@@ -17,3 +21,28 @@ def create_project(db: Session, project_input: ProjectCreate, user_login: UserRe
     db.refresh(new_project)
 
     return new_project
+
+def get_projects(db: Session, current_user: UserModel , key_name: Optional[str] = None):
+    rows = db.query(ProjectModel.id).filter(ProjectModel.owner_id == current_user.id).all()
+
+    owner_pids = []
+    for row in rows:
+        owner_pids.append(row.id)
+
+    rows = db.query(ProjectMemberModel.project_id).filter(ProjectMemberModel.user_id == current_user.id).all()
+
+    for row in rows:
+        owner_pids.append(row.project_id)
+
+    if not owner_pids:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Người dùng không có dự án hay là thành viên của bất kỳ dự án nào1"
+        )
+
+    list_project_response = db.query(ProjectModel).filter(ProjectModel.id.in_(owner_pids))
+
+    if key_name is not None:
+        list_project_response = list_project_response.filter(ProjectModel.name.like(f"%{key_name}%"))
+
+    return list_project_response.all()
