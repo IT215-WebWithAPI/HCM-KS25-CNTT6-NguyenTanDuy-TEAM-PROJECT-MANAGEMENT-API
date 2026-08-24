@@ -9,13 +9,12 @@ class ProjectMemberBase(BaseModel):
 class ProjectMemberCreate(ProjectMemberBase):
     project_id: int = Field(...)
     user_id: int = Field(...)
-    role: Literal["owner", "member"] = Field(...)
-    joined_at: Optional[datetime] = Field(...)
+    role: str = Field(...)
 
 class ProjectMemberUpdate(ProjectMemberBase):
     project_id: int = Field(...)
     user_id: int = Field(...)
-    role: Literal["owner", "member"] = Field(...)
+    role: str = Field(...)
 
 class ProjectMemberResponse(ProjectMemberBase):
     id: int

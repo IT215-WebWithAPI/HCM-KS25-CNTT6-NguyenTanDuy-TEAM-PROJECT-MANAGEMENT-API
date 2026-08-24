@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 class ProjectBase(BaseModel):
-    name: str = Field(...)
+    name: str = Field(..., max_length=50)
 
     class Config:
         from_attributes = True
@@ -14,7 +14,6 @@ class ProjectCreate(ProjectBase):
 
 class ProjectUpdate(ProjectBase):
     description: str
-    owner_id: int = Field(...)
 
 class ProjectResponse(ProjectBase):
     id: int

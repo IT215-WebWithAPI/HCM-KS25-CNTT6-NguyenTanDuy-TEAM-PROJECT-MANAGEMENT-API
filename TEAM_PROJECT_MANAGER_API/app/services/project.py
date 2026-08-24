@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.schemas.project_schema import ProjectCreate
+from app.schemas.project_schema import ProjectCreate, ProjectUpdate
 from app.models.project_model import ProjectModel
 from app.models.user_model import UserModel
 from app.models.project_members_model import ProjectMemberModel
@@ -70,5 +70,26 @@ def get_project_id(db: Session, current_user: UserModel, id: int):
 
     return data_response
 
-    
+def update_project(db: Session, current_user: UserModel, id: int, project_upd: ProjectUpdate):
+    project_db = db.query(ProjectModel).filter(ProjectModel.id == id).first()
 
+    if not project_db:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="ID dự án không tồn tại!"
+        )
+
+    if not (current_user.id == project_db.owner_id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bạn không có quyền chỉnh sửa, Quyền này của OWNER!"
+        )
+
+    if (project_upd.name is not None) and project_upd.name != "":
+        project_db.name = project_upd.name
+    if project_upd.description is not None:
+        project_db.description = project_upd.description
+
+    db.commit()
+    db.refresh(project_db)
+    return project_db

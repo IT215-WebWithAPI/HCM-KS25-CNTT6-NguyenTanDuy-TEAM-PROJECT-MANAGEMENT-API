@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Form, HTTPException, status
 from fastapi import Request
 from sqlalchemy.orm import Session
 from app.dependencies.dependencies import RoleChecker, get_current_user
-from app.schemas.project_schema import ProjectCreate, ProjectResponse
+from app.schemas.project_schema import ProjectCreate, ProjectResponse, ProjectUpdate
 from app.schemas.response_schemas import ResponseCreate
 from app.models.user_model import UserModel
 from app.dependencies.dependencies import get_current_user
@@ -16,10 +16,10 @@ project_router = APIRouter(
     tags=["Project"]
 )
 
-@project_router.post("/projects", tags=["Projects"], status_code=status.HTTP_201_CREATED, response_model=ResponseCreate)
+@project_router.post("", status_code=status.HTTP_201_CREATED, response_model=ResponseCreate)
 def create_project(
     req: Request,
-    name_project: str = Form(..., description="Tên dự án"),
+    name_project: str = Form(..., description="Tên dự án", max_length=50),
     description: str = Form(description="Mô tả dự án"),
     current_user: UserModel = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -32,7 +32,7 @@ def create_project(
 
     return create_response(req, status.HTTP_201_CREATED, "Thêm dự án thành công!", data_response, None)
 
-@project_router.get("/projects", tags=["Projects"], response_model=ResponseCreate, status_code=status.HTTP_200_OK)
+@project_router.get("/", response_model=ResponseCreate, status_code=status.HTTP_200_OK)
 def get_projects(
     req: Request,
     key_name: Optional[str] = None,
@@ -47,7 +47,7 @@ def get_projects(
 
     return create_response(req, 200, "Lấy danh sách dự án thành công!", data_response, None)
 
-@project_router.get("/projects/{id}", tags=["Projects"], response_model=ResponseCreate, status_code=status.HTTP_200_OK)
+@project_router.get("/{id}", response_model=ResponseCreate, status_code=status.HTTP_200_OK)
 def get_project_id(
     req: Request,
     id: int,
@@ -61,3 +61,25 @@ def get_project_id(
         data_response.append(ProjectResponse.model_validate(value))
 
     return create_response(req, 200, "Lấy danh sách dự án thành công!", data_response, None)
+
+@project_router.patch("/{id}", response_model=ResponseCreate, status_code=status.HTTP_200_OK)
+def update_project(
+    req: Request,
+    id: int,
+    current_user: UserModel = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    name: Optional[str] = Form(description="Nhập tên mới hoặc không nhập để lấy tên cũ", default=None),
+    description: Optional[str] = Form(description="Nhập mô tả mới hoặc không nhập để lấy mô tả cũ", default=None)
+):
+    if name is not None:
+        name = name.strip()
+
+    if description is not None:
+        description = description.strip()
+    project_upd = ProjectUpdate(name=name, description=description)
+
+    project_updated = ser_project.update_project(db, current_user, id, project_upd)
+
+    project_response = ProjectResponse.model_validate(project_updated)
+
+    return create_response(req, status.HTTP_200_OK, "Cập nhật tành công!", project_response, None)
