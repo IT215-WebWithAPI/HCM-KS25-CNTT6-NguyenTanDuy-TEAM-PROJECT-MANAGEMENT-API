@@ -32,7 +32,7 @@ def create_project(
 
     return create_response(req, status.HTTP_201_CREATED, "Thêm dự án thành công!", data_response, None)
 
-@project_router.get("/projects/", tags=["Projects"], response_model=ResponseCreate, status_code=status.HTTP_200_OK)
+@project_router.get("/projects", tags=["Projects"], response_model=ResponseCreate, status_code=status.HTTP_200_OK)
 def get_projects(
     req: Request,
     key_name: Optional[str] = None,
@@ -41,6 +41,21 @@ def get_projects(
 ):
     data_filtered = ser_project.get_projects(db, current_user, key_name)
 
+    data_response = []
+    for value in data_filtered:
+        data_response.append(ProjectResponse.model_validate(value))
+
+    return create_response(req, 200, "Lấy danh sách dự án thành công!", data_response, None)
+
+@project_router.get("/projects/{id}", tags=["Projects"], response_model=ResponseCreate, status_code=status.HTTP_200_OK)
+def get_project_id(
+    req: Request,
+    id: int,
+    current_user: UserModel = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    data_filtered = ser_project.get_project_id(db, current_user, id)
+    
     data_response = []
     for value in data_filtered:
         data_response.append(ProjectResponse.model_validate(value))
