@@ -11,7 +11,6 @@ class ProjectBase(BaseModel):
 class ProjectCreate(ProjectBase):
     description: str
     owner_id: int = Field(...)
-    created_at: Optional[datetime] = Field(...)
 
 class ProjectUpdate(ProjectBase):
     description: str
@@ -22,3 +21,4 @@ class ProjectResponse(ProjectBase):
     name: str
     description: str
     owner_id: int
+    created_at: datetime

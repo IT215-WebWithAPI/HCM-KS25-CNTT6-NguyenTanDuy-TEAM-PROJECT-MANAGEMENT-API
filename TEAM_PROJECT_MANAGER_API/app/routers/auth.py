@@ -4,7 +4,7 @@ from app.schemas.response_schemas import ResponseCreate
 from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.services.response import create_response
-from app.core.security import create_access_token
+from app.core.security import create_access_token, create_refresh_token
 from app.dependencies.dependencies import get_current_user, RoleChecker
 from app.models.user_model import UserModel
 
@@ -49,9 +49,9 @@ def login_user(
         "role": role_name
     })
 
-    refresh_token = create_access_token(data={
+    refresh_token = create_refresh_token(data={
         "sub": user_input_login.email,
-        "role": role_name
+        "id": user_input_login.id
     })
 
     data = {

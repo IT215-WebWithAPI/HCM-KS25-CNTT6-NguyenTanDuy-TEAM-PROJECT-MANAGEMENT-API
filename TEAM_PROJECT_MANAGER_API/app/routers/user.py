@@ -17,13 +17,9 @@ user_router = APIRouter(
 
 @user_router.get("/refresh-token", tags=["Token"], status_code=status.HTTP_200_OK, response_model=ResponseCreate)
 def refresh_access_token(req: Request, token: str, db: Session = Depends(get_db)):
-    access_token = refresh_token(token, db)
+    data_response = refresh_token(token, db)
 
-    data = {
-        "access_token": access_token
-    }
-
-    return create_response(req, status.HTTP_200_OK, "Xác thực, cấp token thành công!", data, None)
+    return create_response(req, status.HTTP_200_OK, "Xác thực, cấp token thành công!", data_response, None)
 
 
 @user_router.get("/me", response_model=ResponseCreate, status_code=status.HTTP_200_OK)

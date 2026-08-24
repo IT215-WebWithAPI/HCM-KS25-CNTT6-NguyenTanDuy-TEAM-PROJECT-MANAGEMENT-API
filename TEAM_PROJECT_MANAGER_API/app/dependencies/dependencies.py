@@ -13,6 +13,12 @@ reusable_oauth2 = HTTPBearer()
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = settings.ALGORITHM
 
+credentials_exc = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Không thể xác thực thông tin đăng nhập!",
+        headers={"WWW-Authenticate": "Bearer"}
+    )
+
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(reusable_oauth2),
     db: Session = Depends(get_db)
@@ -21,11 +27,6 @@ async def get_current_user(
     # vấn đề token
     token = credentials.credentials
 
-    credentials_exc = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Không thể xác thực thông tin đăng nhập!",
-        headers={"WWW-Authenticate": "Bearer"}
-    )
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
