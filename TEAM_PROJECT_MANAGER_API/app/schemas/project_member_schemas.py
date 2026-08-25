@@ -11,11 +11,6 @@ class ProjectMemberCreate(ProjectMemberBase):
     project_id: int = Field(...)
     user_id: int = Field(...)
 
-class ProjectMemberUpdate(ProjectMemberBase):
-    project_id: int = Field(...)
-    user_id: int = Field(...)
-    role: str = Field(...)
-
 class ProjectMemberResponse(ProjectMemberBase):
     id: int
     project_id: int

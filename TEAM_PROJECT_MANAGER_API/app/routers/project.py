@@ -20,7 +20,7 @@ project_router = APIRouter(
 def create_project(
     req: Request,
     name_project: str = Form(..., description="Tên dự án", max_length=50),
-    description: str = Form(description="Mô tả dự án"),
+    description: Optional[str] = Form("", description="Mô tả dự án"),
     current_user: UserModel = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -28,7 +28,7 @@ def create_project(
     - **name_project**: Tên dự án
     - **description**: Mô tả dự án
     - **note**: API này sẽ được sử dụng để tạo dự án mới, chỉ có thể được truy cập bởi người dùng đã đăng nhập"""
-    name_project = name_project.strip()
+    name_project = name_project.strip() if name_project else None
     description = description.strip() if description else None
     
     project_input = ProjectCreate(name=name_project, description=description, owner_id=current_user.id)
@@ -79,8 +79,8 @@ def update_project(
     id: int,
     current_user: UserModel = Depends(get_current_user),
     db: Session = Depends(get_db),
-    name: Optional[str] = Form(description="Nhập tên mới hoặc không nhập để lấy tên cũ", default=None),
-    description: Optional[str] = Form(description="Nhập mô tả mới hoặc không nhập để lấy mô tả cũ", default=None)
+    name: Optional[str] = Form("", description="Nhập tên mới hoặc không nhập để lấy tên cũ"),
+    description: Optional[str] = Form("", description="Nhập mô tả mới hoặc không nhập để lấy mô tả cũ")
 ):
     """UPDATE PROJECT
     - **id**: ID dự án

@@ -3,13 +3,13 @@ from datetime import datetime
 from typing import Optional
 
 class ProjectBase(BaseModel):
-    name: str = Field(..., max_length=50)
+    name: Optional[str] = Field(..., max_length=50)
 
     class Config:
         from_attributes = True
 
 class ProjectCreate(ProjectBase):
-    description: str
+    description: Optional[str] = None
     owner_id: int = Field(...)
 
 class ProjectUpdate(ProjectBase):

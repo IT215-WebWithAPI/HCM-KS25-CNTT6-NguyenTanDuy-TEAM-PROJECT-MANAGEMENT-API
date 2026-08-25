@@ -25,14 +25,14 @@ def refresh_access_token(req: Request, token: str, db: Session = Depends(get_db)
     return create_response(req, status.HTTP_200_OK, "Xác thực, cấp token thành công!", data_response, None)
 
 
-@user_router.get("/user/me", response_model=ResponseCreate, status_code=status.HTTP_200_OK, tags=["Users"])
+@user_router.get("/user/me", response_model=ResponseCreate, status_code=status.HTTP_200_OK)
 def get_user(req: Request, current_user: UserModel = Depends(get_current_user)):
     """GET USER INFO
     - **note**: API này sẽ được sử dụng để lấy thông tin người dùng hiện tại đang đăng nhập"""
     data = UserResponse.model_validate(current_user)
     return create_response(req, status.HTTP_200_OK, "Lấy thông tin người dùng thành công!", data, None)
 
-@user_router.get("/users", response_model=ResponseCreate, status_code=status.HTTP_200_OK, tags=["Users"])
+@user_router.get("/users", response_model=ResponseCreate, status_code=status.HTTP_200_OK)
 def get_admin(req: Request, key_name: Optional[str] = None, key_email: Optional[str] = None, key_is_active: Optional[bool] = None, db: Session = Depends(get_db), current_user: UserModel = Depends(RoleChecker(["admin"]))):
     """GET ALL USERS
     - **key_name**: Tên người dùng (full_name)

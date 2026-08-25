@@ -14,6 +14,12 @@ def create_task(
         current_user: UserModel
 ):
 
+    if (db.query(UserModel).filter(UserModel.id == task_input.assignee_id).first()) is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Người được giao không tồn tại, Không thể thêm làm thành viên!"
+        )
+
     project_db = db.query(ProjectModel).filter(ProjectModel.id == task_input.project_id).first()
     if project_db is None:
         raise HTTPException(
@@ -44,7 +50,7 @@ def create_task(
         )
     
     datetime_now = datetime.now()
-    if task_input.due_date.timestamp() <= datetime_now.timestamp():
+    if  task_input.due_date and task_input.due_date.timestamp() <= datetime_now.timestamp():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Hạn xử lý không phù hợp, phải lớn hơn hơn thời gian hiện tại!"
@@ -138,8 +144,9 @@ def update_task(db: Session, current_user: UserModel, id: int, task_input: TaskU
                 detail="Người được giao không phải là thành viên của dự án, không thể thêm!"
             )
 
-    datetime_now = datetime.now()
-    if "due_date" in update_data:
+    if update_data.get("due_date") is not None:
+        datetime_now = datetime.now()
+
         if update_data["due_date"].timestamp() <= datetime_now.timestamp():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,

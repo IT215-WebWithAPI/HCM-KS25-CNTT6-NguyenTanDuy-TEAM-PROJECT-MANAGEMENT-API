@@ -10,24 +10,24 @@ class TaskCreate(TaskBase):
     project_id: int = Field(...)
     title: str = Field(...)
     description: Optional[str]
-    assignee_id: Optional[int]
-    priority: str = Field(...)
+    assignee_id: int = Field(...)
+    priority: str
     due_date: Optional[datetime] = None
 
 class TaskUpdate(TaskBase):
-    title: str = Field(...)
-    description: str
-    assignee_id: int
-    status: str = Field(...)
-    priority: str = Field(...)
-    due_date: Optional[datetime]
+    title: Optional[str] = None
+    description: Optional[str] = None 
+    assignee_id: Optional[int] = None
+    status: Optional[str] = None
+    priority: Optional[str] = None
+    due_date: Optional[datetime] = None
 
 class TaskResponse(TaskBase):
     id: int
     project_id: int
     title: str
-    description: str
-    assignee_id: int
+    description: Optional[str] = None 
+    assignee_id: Optional[int] = None
     status: str
     created_at: Optional[datetime] = Field(...)
     due_date: Optional[datetime]
