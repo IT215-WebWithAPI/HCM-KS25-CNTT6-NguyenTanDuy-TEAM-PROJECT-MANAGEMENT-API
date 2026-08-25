@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from app.db.database import Base, get_db, engine
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -15,6 +15,7 @@ import app.models.project_members_model
 import app.models.task_model
 
 import app.dependencies.dependencies
+from app.services.response import create_response
 
 app = FastAPI()
 
@@ -29,18 +30,12 @@ app.include_router(member_router)
 app.include_router(task_router)
 
 @app.get("/health")
-def health_check(db: Session = Depends(get_db)):
+def health_check(req: Request, db: Session = Depends(get_db)):
+    """HEALTH CHECK
+    - **note**: API này sẽ được sử dụng để kiểm tra tình trạng hoạt động của hệ thống"""
     try:
         db.execute(text("SELECT 1"))
-        return {
-            "status": "healthy",
-            "database": "connected",
-            "message": "Hệ thống đang hoạt động ổn định!"
-        }
+        return create_response(req, 200, "Hệ thống đang hoạt động ổn định!", {"status": "healthy", "database": "connected"}, None)
     except Exception as e:
-        return {
-            "status": "unhealthy",
-            "database": "disconnected",
-            "error": str(e)
-        }
+        return create_response(req, 500, "Hệ thống gặp sự cố!", None, str(e))
 

@@ -17,14 +17,28 @@ auth_router = APIRouter(
 
 
 @auth_router.post("/register", tags=["Authentication"], response_model=ResponseCreate, status_code=status.HTTP_201_CREATED)
-def create_user(req: Request, 
-                email: str = Form(..., description="Email"),
-                password: str = Form(..., description="Mật khẩu"),
-                full_name: str = Form(description="Họ và tên"),
-                role: str = Form(description="Phân quyền người dùng", default="user"),
-                is_active: bool = Form(description="Trạng thái tài khoản", default=True),
-                db: Session = Depends(get_db)):
+def create_user(
+    req: Request, 
+    email: str = Form(..., description="Email"),
+    password: str = Form(..., description="Mật khẩu"),
+    full_name: str = Form(..., description="Họ và tên"),
+    role: str = Form(description="Phân quyền người dùng", default="user"),
+    is_active: bool = Form(description="Trạng thái tài khoản", default=True),
+    db: Session = Depends(get_db)
+):
+    """REGISTER USER
+    - **email**: Email của người dùng
+    - **password**: Mật khẩu của người dùng
+    - **full_name**: Họ và tên của người dùng(không có ký số)
+    - **role**: Phân quyền người dùng (admin, user)
+    - **is_active**: Trạng thái tài khoản (True: Hoạt động, False: Không hoạt động)
+    - **note**: Không có yêu cầu liên quan đến tạo API update của user, nên role và is_active sẽ được chọn trong lúc đăng ký để có thể demo API hoạt động có liên quan đến role và is_active."""
 
+    email = email.strip()
+    password = password.strip()
+    full_name = full_name.strip()
+    role = role.strip() if role else None
+    
     user_input = UserCreate(email=email, password=password, full_name=full_name, role=role, is_active=is_active)
     new_user_created = ser_auth.create_user(db, user_input)
     user_response = UserResponse.model_validate(new_user_created)
@@ -38,6 +52,12 @@ def login_user(
     password: str = Form(..., description="Mật khẩu"),
     db: Session = Depends(get_db)
 ):
+    """LOGIN USER
+    - **email**: Email của người dùng
+    - **password**: Mật khẩu của người dùng"""
+    email = email.strip()
+    password = password.strip()
+    
     user_input = UserLogin(email=email, password=password)
     user_input_login = ser_auth.login_user(db, user_input)
 

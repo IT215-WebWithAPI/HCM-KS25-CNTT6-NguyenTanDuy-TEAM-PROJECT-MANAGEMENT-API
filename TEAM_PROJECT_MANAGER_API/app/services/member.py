@@ -13,13 +13,6 @@ def create_member(db: Session, current_user: UserModel, member_input: ProjectMem
             detail="Bạn không có quyền thêm mới thành viên khi không phải OWNER!"
         )
 
-    if (db.query(ProjectMemberModel).filter(ProjectMemberModel.role == "owner").first()):
-        if member_input.role == "owner":
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Dự án đã có owner, bạn không thể thêm!"
-            )
-
     if (db.query(UserModel).filter(UserModel.id == member_input.user_id).first()) is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

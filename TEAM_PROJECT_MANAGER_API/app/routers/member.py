@@ -23,16 +23,23 @@ def create_member(
     db: Session = Depends(get_db),
     current_user: UserModel = Depends(get_current_user)
 ):
+    """CREATE MEMBER
+    - **project_id**: ID dự án
+    - **user_id**: ID người dùng
+    - **note**: API này sẽ được sử dụng để thêm thành viên vào dự án, chỉ có thể được truy cập bởi người dùng đã đăng nhập"""
+    
     member_input = ProjectMemberCreate(project_id=project_id, user_id=user_id)
 
     new_member = ser_member.create_member(db, current_user, member_input)
-
     data_response = ProjectMemberResponse.model_validate(new_member)
-
     return create_response(req, status.HTTP_201_CREATED, "Thêm thành viên thành công!", data_response, None)
 
 @member_router.delete("/projects/{id}/members/{user_id}", status_code=status.HTTP_200_OK, response_model=ResponseCreate)
 def delete_member(req: Request, id: int, user_id: int, db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_user)):
+    """DELETE MEMBER
+    - **id**: ID dự án
+    - **user_id**: ID người dùng
+    - **note**: API này sẽ được sử dụng để xóa thành viên khỏi dự án, chỉ có thể được truy cập bởi người dùng đã đăng nhập"""
     user_dele = ser_member.delete_member(db, id, user_id, current_user)
 
     data_response = ProjectMemberResponse.model_validate(user_dele)
@@ -47,6 +54,9 @@ def get_members(
     db: Session = Depends(get_db),
     current_user: UserModel = Depends(get_current_user)
 ):
+    """GET MEMBERS
+    - **id**: ID dự án
+    - **note**: API này sẽ được sử dụng để lấy danh sách thành viên của dự án, chỉ có thể được truy cập bởi người dùng đã đăng nhập"""
     members = ser_member.get_project_members(db, id)
 
     data_response = []

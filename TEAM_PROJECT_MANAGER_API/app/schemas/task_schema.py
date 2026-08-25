@@ -11,7 +11,6 @@ class TaskCreate(TaskBase):
     title: str = Field(...)
     description: Optional[str]
     assignee_id: Optional[int]
-    status: str = Field(...)
     priority: str = Field(...)
     due_date: Optional[datetime] = None
 
@@ -21,6 +20,7 @@ class TaskUpdate(TaskBase):
     assignee_id: int
     status: str = Field(...)
     priority: str = Field(...)
+    due_date: Optional[datetime]
 
 class TaskResponse(TaskBase):
     id: int
