@@ -13,6 +13,13 @@ def create_member(db: Session, current_user: UserModel, member_input: ProjectMem
             detail="Bạn không có quyền thêm mới thành viên khi không phải OWNER!"
         )
 
+    if (db.query(ProjectMemberModel).filter(ProjectMemberModel.role == "owner").first()):
+        if member_input.role == "owner":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Dự án đã có owner, bạn không thể thêm!"
+            )
+
     if (db.query(UserModel).filter(UserModel.id == member_input.user_id).first()) is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -26,7 +33,7 @@ def create_member(db: Session, current_user: UserModel, member_input: ProjectMem
         )
 
     new_member = ProjectMemberModel(
-        role=member_input.role,
+        role="member",
         project_id=member_input.project_id,
         user_id=member_input.user_id
     )
@@ -61,17 +68,10 @@ def delete_member(db: Session, id: int, user_id: int, current_user: UserModel):
         )
 
     if user_dele.role == "owner":
-        list_role_member = []
-        list_member = db.query(ProjectMemberModel).filter(ProjectMemberModel.project_id == id).all()
-
-        for value in list_member:
-            list_role_member.append(value.role)
-
-        if "member" in list_role_member:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Yêu cầu xóa thành viên thất bại vì trong dự án còn member, owner phải xóa cuối cùng!"
-            )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Bạn không thể xóa vì chính bạn là owner!"
+        )
     db.delete(user_dele)
     db.commit()
     return user_dele
@@ -85,8 +85,11 @@ def get_project_members(db: Session, project_id: int):
             detail="Dự án không tồn tại!"
         )
 
-    members = db.query(ProjectMemberModel).filter(
+    results = db.query(ProjectMemberModel, UserModel).join(
+        UserModel, ProjectMemberModel.user_id == UserModel.id
+    ).filter(
         ProjectMemberModel.project_id == project_id
     ).all()
 
-    return members
+    return results
+

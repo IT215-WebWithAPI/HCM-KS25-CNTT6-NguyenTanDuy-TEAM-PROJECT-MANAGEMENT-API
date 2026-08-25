@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import Optional, Literal
+from typing import Optional
 
 class TaskBase(BaseModel):
     class Config:
@@ -9,20 +9,18 @@ class TaskBase(BaseModel):
 class TaskCreate(TaskBase):
     project_id: int = Field(...)
     title: str = Field(...)
-    description: str
-    assignee_id: int
-    status: Literal["todo", "in_progress", "done"] = Field(...)
-    priority: Literal["low", "medium", "high"] = Field(...)
-    due_dare: Optional[datetime] = None
-    created_at: Optional[datetime] = Field(...)
+    description: Optional[str]
+    assignee_id: Optional[int]
+    status: str = Field(...)
+    priority: str = Field(...)
+    due_date: Optional[datetime] = None
 
 class TaskUpdate(TaskBase):
-    project_id: int = Field(...)
     title: str = Field(...)
     description: str
     assignee_id: int
-    status: Literal["todo", "in_progress", "done"] = Field(...)
-    priority: Literal["low", "medium", "high"] = Field(...)
+    status: str = Field(...)
+    priority: str = Field(...)
 
 class TaskResponse(TaskBase):
     id: int
@@ -31,3 +29,5 @@ class TaskResponse(TaskBase):
     description: str
     assignee_id: int
     status: str
+    created_at: Optional[datetime] = Field(...)
+    due_date: Optional[datetime]

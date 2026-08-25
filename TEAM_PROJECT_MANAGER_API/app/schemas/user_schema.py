@@ -28,3 +28,8 @@ class UserResponse(UserBase):
     role: str
     created_at: datetime
     is_active: bool
+
+class UserInnerJoin(UserBase):
+    full_name: str
+    id: int
+    

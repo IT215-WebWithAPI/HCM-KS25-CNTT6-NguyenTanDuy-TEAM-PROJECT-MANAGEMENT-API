@@ -11,7 +11,7 @@ from app.models.user_model import UserModel
 import app.services.authentication as ser_auth
 
 auth_router = APIRouter(
-    prefix="/api/auth",
+    prefix="/api",
     tags=["Authentication"]
 )
 

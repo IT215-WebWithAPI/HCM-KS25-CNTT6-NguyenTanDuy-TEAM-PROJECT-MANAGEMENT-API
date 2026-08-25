@@ -6,6 +6,7 @@ from app.models.project_members_model import ProjectMemberModel
 from app.schemas.user_schema import UserResponse
 from typing import Optional
 from fastapi import HTTPException, status
+from app.models.project_members_model import ProjectMemberModel
 
 def create_project(db: Session, project_input: ProjectCreate, user_login: UserResponse):
 
@@ -16,9 +17,20 @@ def create_project(db: Session, project_input: ProjectCreate, user_login: UserRe
         owner_id = user_login.id
     )
 
+    
+
     db.add(new_project)
     db.commit()
     db.refresh(new_project)
+
+    new_member = ProjectMemberModel(
+        role="owner",
+        project_id=new_project.id,
+        user_id=project_input.owner_id
+    )
+
+    db.add(new_member)
+    db.commit()
 
     return new_project
 

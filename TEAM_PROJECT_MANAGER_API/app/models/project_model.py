@@ -13,7 +13,7 @@ class ProjectModel(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
-    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     owner = relationship("UserModel", back_populates="project")
     project_member = relationship("ProjectMemberModel", back_populates="project")

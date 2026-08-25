@@ -10,8 +10,8 @@ class ProjectMemberModel(Base):
     role = Column(String(50))
     joined_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
-    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     project = relationship("ProjectModel", back_populates="project_member")
     user = relationship("UserModel", back_populates="project_member")

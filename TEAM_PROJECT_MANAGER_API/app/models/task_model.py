@@ -12,10 +12,10 @@ class TaskModel(Base):
     status = Column(String(20), nullable=False)
     priority = Column(String(20), nullable=False)
     due_date = Column(DateTime)
-    created_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
-    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
-    assignee_id = Column(Integer, ForeignKey("users.id"))
+    project_id = Column(Integer, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    assignee_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
 
     project = relationship("ProjectModel", back_populates="task")
     assignee = relationship("UserModel", back_populates="task")

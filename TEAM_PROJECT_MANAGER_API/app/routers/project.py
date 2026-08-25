@@ -12,11 +12,11 @@ from app.db.database import get_db
 from typing import Optional
 
 project_router = APIRouter(
-    prefix="/api/project",
+    prefix="/api",
     tags=["Project"]
 )
 
-@project_router.post("", status_code=status.HTTP_201_CREATED, response_model=ResponseCreate)
+@project_router.post("/projects", status_code=status.HTTP_201_CREATED, response_model=ResponseCreate)
 def create_project(
     req: Request,
     name_project: str = Form(..., description="Tên dự án", max_length=50),
@@ -32,7 +32,7 @@ def create_project(
 
     return create_response(req, status.HTTP_201_CREATED, "Thêm dự án thành công!", data_response, None)
 
-@project_router.get("/", response_model=ResponseCreate, status_code=status.HTTP_200_OK)
+@project_router.get("/projects/", response_model=ResponseCreate, status_code=status.HTTP_200_OK)
 def get_projects(
     req: Request,
     key_name: Optional[str] = None,
@@ -47,7 +47,7 @@ def get_projects(
 
     return create_response(req, 200, "Lấy danh sách dự án thành công!", data_response, None)
 
-@project_router.get("/{id}", response_model=ResponseCreate, status_code=status.HTTP_200_OK)
+@project_router.get("projects/{id}", response_model=ResponseCreate, status_code=status.HTTP_200_OK)
 def get_project_id(
     req: Request,
     id: int,
@@ -62,7 +62,7 @@ def get_project_id(
 
     return create_response(req, 200, "Lấy danh sách dự án thành công!", data_response, None)
 
-@project_router.patch("/{id}", response_model=ResponseCreate, status_code=status.HTTP_200_OK)
+@project_router.patch("projetcs/{id}", response_model=ResponseCreate, status_code=status.HTTP_200_OK)
 def update_project(
     req: Request,
     id: int,
