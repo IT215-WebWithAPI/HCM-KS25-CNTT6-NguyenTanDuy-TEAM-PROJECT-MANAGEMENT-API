@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Form, HTTPException, status, Depends, Request
+from fastapi import APIRouter, Form, HTTPException, Path, status, Depends, Request
 from app.schemas.response_schemas import ResponseCreate
 from sqlalchemy.orm import Session
 from app.db.database import get_db
@@ -16,15 +16,15 @@ task_router = APIRouter(
     tags=["Tasks"]
 )
 
-@task_router.post("", response_model=ResponseCreate, status_code=status.HTTP_201_CREATED)
+@task_router.post("/tasks", response_model=ResponseCreate, status_code=status.HTTP_201_CREATED)
 def create_task(
     req: Request,
     project_id: int = Form(..., description="Mã dự án của Task"),
     title: str = Form(..., description="Tiêu đề Task"),
-    description: Optional[str] = Form(description="Mô tả của Task", default="Chưa có mô tả"),
-    assignee_id: Optional[int] = Form(description="Người được giao Task (user_id)"),
+    description: str = Form(None, description="Mô tả của Task"),
+    assignee_id: int = Form(..., description="Người được giao Task (user_id)"),
     priority: str = Form(..., description="Mức độ quan trọng / Ưu tiên của Task (LOW / MEDIUM / HIGH)"),
-    due_date: datetime = Form(description="Thời gian hết hạn",),
+    due_date: Optional[datetime] = Form(None, description="Thời gian hết hạn"),
     db: Session = Depends(get_db),
     current_user: UserModel = Depends(get_current_user)
 
@@ -82,12 +82,12 @@ def get_task(
 def update_task(
         req: Request,
         id: int,
-        title: Optional[str] = Form(description="Tiêu đề Task"),
-        description: Optional[str] = Form(description="Mô tả của Task", default="Chưa có mô tả"),
-        assignee_id: Optional[int] = Form(description="Người được giao Task (*Chỉnh sửa hiệu lực khi bạn là owner)"),
-        status_task: Optional[str] = Form(description="Nhập mô tả cho Task (TODO / IN_PROGRESS / DONE)"),
-        priority: Optional[str] = Form(description="Mức độ ưu tiên(LOW / MEDIUM / HIGH)"),
-        due_date: Optional[datetime] = Form(description="Thời gian hết hạn (*Chỉnh sửa hiệu lực khi bạn là owner) 'exp: 2000-01-01T00:00:00'",),
+        title: str = Form(None, description="Tiêu đề Task"),
+        description: Optional[str] = Form(None, description="Mô tả của Task"),
+        assignee_id: Optional[int] = Form(None, description="Người được giao Task (*Chỉnh sửa hiệu lực khi bạn là owner)"),
+        status_task: Optional[str] = Form(None, description="Nhập mô tả cho Task (TODO / IN_PROGRESS / DONE)"),
+        priority: Optional[str] = Form(None, description="Mức độ ưu tiên(LOW / MEDIUM / HIGH)"),
+        due_date: Optional[datetime] = Form(None, description="Thời gian hết hạn (*Chỉnh sửa hiệu lực khi bạn là owner) 'exp: 2000-01-01T00:00:00'",),
         db: Session = Depends(get_db),
         current_user: UserModel = Depends(get_current_user)
 ):
@@ -116,7 +116,7 @@ def update_task(
 @task_router.delete("/tasks/{id}", status_code=status.HTTP_200_OK, response_model=ResponseCreate)
 def delete_task(
     req: Request,
-    id: int,
+    id: int = Path(..., description="ID Task"),
     db: Session = Depends(get_db),
     current_user: UserModel = Depends(get_current_user)
 ):

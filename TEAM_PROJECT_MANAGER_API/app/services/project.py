@@ -6,14 +6,27 @@ from app.models.project_members_model import ProjectMemberModel
 from app.schemas.user_schema import UserResponse
 from typing import Optional
 from fastapi import HTTPException, status
-from app.models.project_members_model import ProjectMemberModel
 
 def create_project(db: Session, project_input: ProjectCreate, user_login: UserResponse):
 
+    query = db.query(ProjectModel).filter(ProjectModel.name == project_input.name).first()
+    if query:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Tên dự án đã tồn tại, vui lòng chọn tên khác!"
+        )
+
+    description = project_input.description.strip() if project_input.description else None
+
+    if project_input.name is None or project_input.name.strip() == "":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Tên dự án không được để trống!"
+        )
 
     new_project = ProjectModel(
         name = project_input.name,
-        description = project_input.description,
+        description = description,
         owner_id = user_login.id
     )
 

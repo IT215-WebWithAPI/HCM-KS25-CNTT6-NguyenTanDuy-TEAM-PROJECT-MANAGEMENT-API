@@ -18,8 +18,8 @@ member_router = APIRouter(
 @member_router.post("/member", status_code=status.HTTP_201_CREATED, response_model=ResponseCreate)
 def create_member(
     req: Request,
-    project_id: int = Form(..., description="ID dự án"),
-    user_id: int = Form(..., description="Thành viên"),
+    project_id: int = Form("", description="ID dự án"),
+    user_id: int = Form("", description="Thành viên"),
     db: Session = Depends(get_db),
     current_user: UserModel = Depends(get_current_user)
 ):

@@ -22,8 +22,8 @@ def create_user(
     email: str = Form(..., description="Email"),
     password: str = Form(..., description="Mật khẩu"),
     full_name: str = Form(..., description="Họ và tên"),
-    role: str = Form(description="Phân quyền người dùng", default="user"),
-    is_active: bool = Form(description="Trạng thái tài khoản", default=True),
+    role: str = Form("user", description="Phân quyền người dùng (admin / user)"),
+    is_active: bool = Form(True, description="Trạng thái tài khoản"),
     db: Session = Depends(get_db)
 ):
     """REGISTER USER

@@ -6,6 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from app.core.security import hash_password, verify_password
 import re
 
+
 pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
 
 def is_name_val(name: str):

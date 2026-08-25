@@ -7,6 +7,7 @@ from app.models.project_model import ProjectModel
 from app.models.project_members_model import ProjectMemberModel
 
 def create_member(db: Session, current_user: UserModel, member_input: ProjectMemberCreate):
+
     if (db.query(ProjectModel).filter((ProjectModel.owner_id == current_user.id) & (ProjectModel.id == member_input.project_id)).first()) is None:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
