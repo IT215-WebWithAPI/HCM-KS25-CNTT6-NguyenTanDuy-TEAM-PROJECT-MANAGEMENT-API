@@ -13,7 +13,7 @@ from typing import Optional
 
 project_router = APIRouter(
     prefix="/api",
-    tags=["Project"]
+    tags=["Projects"]
 )
 
 @project_router.post("/projects", status_code=status.HTTP_201_CREATED, response_model=ResponseCreate)

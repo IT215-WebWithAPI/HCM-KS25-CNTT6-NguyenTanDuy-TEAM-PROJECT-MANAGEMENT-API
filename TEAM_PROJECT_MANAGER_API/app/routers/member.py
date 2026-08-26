@@ -12,7 +12,7 @@ import app.services.member as ser_member
 
 member_router = APIRouter(
     prefix="/api",
-    tags=["member"]
+    tags=["Members"]
 )
 
 @member_router.post("/member", status_code=status.HTTP_201_CREATED, response_model=ResponseCreate)
