@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Form, HTTPException, Path, status, Depends, Request
+from fastapi import APIRouter, Form, HTTPException, Path, status, Depends, Request, Query, Path
 from app.schemas.response_schemas import ResponseCreate
 from sqlalchemy.orm import Session
 from app.db.database import get_db
@@ -48,11 +48,11 @@ def create_task(
 @task_router.get("/project/{id}/task")
 def get_tasks_in_project(
     req: Request,
-    id: int,
-    page: int = 1,
-    limit: int = 5,
-    sort_by: Optional[str] = "created_at",
-    sort_order: Optional[str] = "asc",
+    id: int = Path(..., description="ID dự án"),
+    page: int = Query(1, description="Số trang (page)"),
+    limit: int = Query(5, description="Số lượng task trên mỗi trang"),
+    sort_by: Optional[str] = Query("created_at", description="Trường sắp xếp (created_at / due_date)"),
+    sort_order: Optional[str] = Query("asc", description="Thứ tự sắp xếp (asc / desc)"),
     db: Session = Depends(get_db),
     current_user: UserModel = Depends(get_current_user)
 ):
@@ -68,7 +68,7 @@ def get_tasks_in_project(
 @task_router.get("/tasks/{id}", status_code=status.HTTP_200_OK, response_model=ResponseCreate)
 def get_task(
     req: Request,
-    id: int,
+    id: int = Path(..., description="ID Task"),
     db: Session = Depends(get_db),
     current_user: UserModel = Depends(get_current_user)
 ):
@@ -85,7 +85,7 @@ def get_task(
 @task_router.patch("/tasks/{id}", status_code=status.HTTP_200_OK, response_model=ResponseCreate)
 def update_task(
         req: Request,
-        id: int,
+        id: int = Path(..., description="ID Task"),
         title: str = Form(None, description="Tiêu đề Task"),
         description: Optional[str] = Form(None, description="Mô tả của Task"),
         assignee_id: Optional[int] = Form(None, description="Người được giao Task (*Chỉnh sửa hiệu lực khi bạn là owner)"),
