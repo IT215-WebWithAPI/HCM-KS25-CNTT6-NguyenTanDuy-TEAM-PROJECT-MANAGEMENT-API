@@ -15,4 +15,3 @@ def register_exception_handler(app: FastAPI):
     @app.exception_handler(Exception)
     async def global_exception_handler(req: Request, exc: Exception):
         return create_response(req=req, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, message="Lỗi hệ thống nội bộ! Vui lòng thử lại sau!", data=None, error=str(exc))
-        

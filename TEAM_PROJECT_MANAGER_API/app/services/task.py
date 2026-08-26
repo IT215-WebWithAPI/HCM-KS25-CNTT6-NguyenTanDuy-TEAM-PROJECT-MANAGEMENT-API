@@ -73,7 +73,15 @@ def create_task(
 
     return new_task
 
-def get_tasks(db: Session, current_user: UserModel, id: int):
+def get_tasks(
+    db: Session, 
+    current_user: UserModel, 
+    id: int, 
+    page: int = 1,
+    limit: int = 5,
+    sort_by: Optional[str] = "created_at",
+    sort_order: Optional[str] = "asc"
+):
     if db.query(ProjectModel).filter(ProjectModel.id == id).first() is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -86,7 +94,33 @@ def get_tasks(db: Session, current_user: UserModel, id: int):
             detail="Bạn không có quyền truy cập thông tin của dự án khi bạn không phải là thành viên!"
         )
 
-    list_tasks = db.query(TaskModel).filter(TaskModel.project_id == id).all()
+    if page < 1 or limit < 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="page và limit phải lớn hơn 0!"
+        )
+
+    if sort_by not in ["created_at", "due_date"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Mã sort_by không hợp lệ!"
+        )
+
+    if sort_order not in ["asc", "desc"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Mã sort_order không hợp lệ!"
+        )
+
+    query = db.query(TaskModel).filter(TaskModel.project_id == id)
+    query = query.order_by(
+        getattr(TaskModel, sort_by).asc()
+        if sort_order == "asc"
+        else getattr(TaskModel, sort_by).desc()
+    )
+
+    offset = (page - 1) * limit
+    list_tasks = query.offset(offset).limit(limit).all()
 
     return list_tasks
 
