@@ -49,13 +49,17 @@ def create_task(
 def get_tasks_in_project(
     req: Request,
     id: int,
+    page: int = 1,
+    limit: int = 5,
+    sort_by: Optional[str] = "created_at",
+    sort_order: Optional[str] = "asc",
     db: Session = Depends(get_db),
     current_user: UserModel = Depends(get_current_user)
 ):
     """GET TASKS IN PROJECT
     - **id**: ID dự án
     - **note**: API này sẽ được sử dụng để lấy danh sách tasks theo id dự án, chỉ có thể được truy cập bởi người dùng đã đăng nhập"""
-    list_tasks = ser_task.get_tasks(db, current_user, id)
+    list_tasks = ser_task.get_tasks(db, current_user, id, page, limit, sort_by, sort_order)
 
     data_response = [TaskResponse.model_validate(val) for val in list_tasks]
 
@@ -129,53 +133,3 @@ def delete_task(
 
     return create_response(req, status.HTTP_200_OK, "Xóa Task theo id thành công!", data_response, None)
 
-@task_router.get("/tasks", status_code=status.HTTP_200_OK, response_model=ResponseCreate)
-def get_tasks_fillter_search(
-    req: Request,
-    status_task: Optional[str] = None,
-    priority: Optional[str] = None,
-    assignee_id: Optional[int] = None,
-    search_title: Optional[str] = None,
-    db: Session = Depends(get_db),
-    current_user: UserModel = Depends(get_current_user)
-):
-    """GET TASKS WITH FILTER AND SEARCH
-    - **status_task**: Trạng thái của Task (tùy chọn)
-    - **priority**: Mức độ ưu tiên (tùy chọn)
-    - **assignee_id**: ID người được giao Task (tùy chọn)
-    - **search_title**: Tiêu đề Task cần tìm kiếm (tùy chọn)
-    - **note**: API này sẽ được sử dụng để lấy danh sách Task theo bộ lọc và tìm kiếm, chỉ có thể được truy cập bởi người dùng đã đăng nhập"""
-    status_task = status_task.strip().lower() if status_task else None
-    priority = priority.strip().lower() if priority else None
-    search_title = search_title.strip().lower() if search_title else None
-
-    list_tasks = ser_task.get_tasks_filter_search(db, current_user, status_task=status_task, priority=priority, assignee_id=assignee_id, search_title=search_title)
-
-    data_response = [TaskResponse.model_validate(val) for val in list_tasks]
-
-    return create_response(req, status.HTTP_200_OK, "Lấy danh sách Task theo bộ lọc thành công!", data_response, None)
-
-@task_router.get("/tasks", status_code=status.HTTP_200_OK, response_model=ResponseCreate)
-def get_tasks_pagination(
-    req: Request,
-    page: int = 1,
-    limit: int = 5,
-    sort_by: Optional[str] = "created_at",
-    sort_order: Optional[str] = "asc",
-    db: Session = Depends(get_db),
-    current_user: UserModel = Depends(get_current_user)
-):
-    """GET TASKS WITH PAGINATION
-    - **page**: Trang hiện tại (mặc định là 1)
-    - **limit**: Số lượng Task trên mỗi trang (mặc định là 5)
-    - **sort_by**: Cột để sắp xếp (mặc định là created_at)
-    - **sort_order**: Thứ tự sắp xếp (mặc định là asc)
-    - **note**: API này sẽ được sử dụng để lấy danh sách Task theo phân trang, chỉ có thể được truy cập bởi người dùng đã đăng nhập"""
-    sort_by = sort_by.strip().lower() if sort_by else "created_at"
-    sort_order = sort_order.strip().lower() if sort_order else "asc"
-
-    list_tasks = ser_task.get_tasks_pagination(db, current_user, page=page, limit=limit, sort_by=sort_by, sort_order=sort_order)
-
-    data_response = [TaskResponse.model_validate(val) for val in list_tasks.get("tasks", [])]
-
-    return create_response(req, status.HTTP_200_OK, "Lấy danh sách Task theo phân trang thành công!", data_response, None)
